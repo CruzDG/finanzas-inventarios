@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Financiera</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f6fc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 20px 25px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #665f009c;
+      font-weight: normal;
+    }
+
+    button {
+      padding: 12px 22px;
+      margin: 8px 8px 8px 0;
+      font-size: 15px;
+      border: none;
+      background-color: #665f009c;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #504900cc;
+    }
+
+    .form-section {
+      display: none;
+      text-align: left;
+      margin-top: 15px;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input {
+      padding: 8px;
+      width: 100%;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    .resultado {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora Financiera</h1>
+
+    <!-- Menú principal -->
+    <div id="menu">
+      <button onclick="mostrarPE()">Punto de Equilibrio</button>
+      <button onclick="mostrarInventarios()">Administración de Inventarios</button>
+    </div>
+
+    <!-- Formulario Punto de Equilibrio -->
+    <div id="peForm" class="form-section">
+      <label>Precio de venta:</label>
+      <input type="number" id="precioVenta" placeholder="Ej: 100">
+
+      <label>Costo variable:</label>
+      <input type="number" id="costoVariable" placeholder="Ej: 60">
+
+      <label>Costo fijo:</label>
+      <input type="number" id="costoFijo" placeholder="Ej: 5000">
+
+      <label>Intereses:</label>
+      <input type="number" id="interes" placeholder="Ej: 200">
+
+      <label>Dividendos preferentes:</label>
+      <input type="number" id="dividendos" placeholder="Ej: 100">
+
+      <label>Impuesto (ej: 0.3 para 30%):</label>
+      <input type="number" step="0.01" id="impuesto" placeholder="Ej: 0.3">
+
+      <button onclick="calcularPE()">Calcular</button>
+      <button onclick="volverCalcular('resultadoPE')">Volver a Calcular</button>
+      <button onclick="regresarMenu()">Regresar</button>
+
+      <div id="resultadoPE" class="resultado"></div>
+    </div>
+
+    <!-- Formulario Administración de Inventarios -->
+    <div id="invForm" class="form-section">
+      <label>Demanda anual (U):</label>
+      <input type="number" id="U" placeholder="Ej: 10000">
+
+      <label>Costo por pedido (CP):</label>
+      <input type="number" id="CP" placeholder="Ej: 50">
+
+      <label>Costo de mantenimiento por unidad (m):</label>
+      <input type="number" id="m" placeholder="Ej: 2">
+
+      <label>Inventario de seguridad (IS):</label>
+      <input type="number" id="IS" placeholder="Ej: 200">
+
+      <label>Tiempo de espera (TE):</label>
+      <input type="number" id="TE" placeholder="Ej: 5">
+
+      <label>Nivel de incumplimiento (NI):</label>
+      <input type="number" id="NI" placeholder="Ej: 10">
+
+      <button onclick="calcularInventarios()">Calcular</button>
+      <button onclick="volverCalcular('resultadoINV')">Volver a Calcular</button>
+      <button onclick="regresarMenu()">Regresar</button>
+
+      <div id="resultadoINV" class="resultado"></div>
+    </div>
+  </div>
+
+  <script>
+    // Mostrar secciones
+    function mostrarPE() {
+      document.getElementById('menu').style.display = 'none';
+      document.getElementById('peForm').style.display = 'block';
+      limpiarResultado('resultadoPE');
+    }
+
+    function mostrarInventarios() {
+      document.getElementById('menu').style.display = 'none';
+      document.getElementById('invForm').style.display = 'block';
+      limpiarResultado('resultadoINV');
+    }
+
+    // Calcular Punto de Equilibrio
+    function calcularPE() {
+      const precio = parseFloat(document.getElementById('precioVenta').value);
+      const costoVar = parseFloat(document.getElementById('costoVariable').value);
+      const costoFijo = parseFloat(document.getElementById('costoFijo').value);
+      const interes = parseFloat(document.getElementById('interes').value);
+      const dividendos = parseFloat(document.getElementById('dividendos').value);
+      const impuesto = parseFloat(document.getElementById('impuesto').value);
+
+      if ([precio, costoVar, costoFijo, interes, dividendos, impuesto].some(isNaN)) {
+        document.getElementById('resultadoPE').innerText = 'Por favor, completa todos los campos.';
+        return;
+      }
+
+      const margen = precio - costoVar;
+      const peo = costoFijo / margen;
+      const pef = (interes + dividendos) * (1 / (1 - impuesto));
+      const pet = (costoFijo + pef) / margen;
+
+      document.getElementById('resultadoPE').innerHTML = `
+        <p>Margen de Contribución: <strong>${margen.toFixed(2)}</strong></p>
+        <p>Punto de Equilibrio Operativo (PEO): <strong>${peo.toFixed(2)}</strong></p>
+        <p>Punto de Equilibrio Financiero (PEF): <strong>${pef.toFixed(2)}</strong></p>
+        <p>Punto de Equilibrio Total (PET): <strong>${pet.toFixed(2)}</strong></p>
+      `;
+    }
+
+    // Calcular Administración de Inventarios
+    function calcularInventarios() {
+      const U = parseFloat(document.getElementById('U').value);
+      const CP = parseFloat(document.getElementById('CP').value);
+      const m = parseFloat(document.getElementById('m').value);
+      const IS = parseFloat(document.getElementById('IS').value);
+      const TE = parseFloat(document.getElementById('TE').value);
+      const NI = parseFloat(document.getElementById('NI').value);
+
+      if ([U, CP, m, IS, TE, NI].some(isNaN)) {
+        document.getElementById('resultadoINV').innerText = 'Por favor, completa todos los campos.';
+        return;
+      }
+
+      const RD = U / CP;
+      const CEP = Math.sqrt((2 * U * CP) / m);
+      const CT = ((U / CEP) * CP) + ((CEP / 2) * m);
+      const PR = (RD * IS) + (RD * TE) + (CEP * NI);
+
+      document.getElementById('resultadoINV').innerHTML = `
+        <p>Requerimiento Diario (RD): <strong>${RD.toFixed(2)}</strong></p>
+        <p>Costo Económico del Pedido (CEP): <strong>${CEP.toFixed(2)}</strong></p>
+        <p>Costo Total de Inventarios (CT): <strong>${CT.toFixed(2)}</strong></p>
+        <p>Punto de Reorden (PR): <strong>${PR.toFixed(2)}</strong></p>
+      `;
+    }
+
+    // Utilidades
+    function limpiarResultado(id) {
+      document.getElementById(id).innerText = '';
+    }
+
+    function volverCalcular(id) {
+      limpiarResultado(id);
+    }
+
+    function regresarMenu() {
+      document.querySelectorAll('.form-section').forEach(sec => sec.style.display = 'none');
+      document.getElementById('menu').style.display = 'block';
+      limpiarResultado('resultadoPE');
+      limpiarResultado('resultadoINV');
+    }
+  </script>
+</body>
+</html>
