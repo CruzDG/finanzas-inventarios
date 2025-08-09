@@ -132,6 +132,9 @@
       <label>Nivel de incumplimiento (NI):</label>
       <input type="number" id="NI" placeholder="Ej: 10">
 
+      <label>Días laborales al año (DL):</label>
+      <input type="number" id="DL" placeholder="Ej: 250">
+
       <button onclick="calcularInventarios()">Calcular</button>
       <button onclick="volverCalcular('resultadoINV')">Volver a Calcular</button>
       <button onclick="regresarMenu()">Regresar</button>
@@ -189,13 +192,14 @@
       const IS = parseFloat(document.getElementById('IS').value);
       const TE = parseFloat(document.getElementById('TE').value);
       const NI = parseFloat(document.getElementById('NI').value);
+      const DL = parseFloat(document.getElementById('DL').value);
 
-      if ([U, CP, m, IS, TE, NI].some(isNaN)) {
+      if ([U, CP, m, IS, TE, NI, DL].some(isNaN)) {
         document.getElementById('resultadoINV').innerText = 'Por favor, completa todos los campos.';
         return;
       }
 
-      const RD = U / CP;
+      const RD = U / DL;  // Ahora sí calculamos RD con días laborales
       const CEP = Math.sqrt((2 * U * CP) / m);
       const CT = ((U / CEP) * CP) + ((CEP / 2) * m);
       const PR = (RD * IS) + (RD * TE) + (CEP * NI);
